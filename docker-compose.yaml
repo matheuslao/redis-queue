@@ -15,10 +15,10 @@ services:
     ports:
       - "8081:8081"
 
-  app:
-    image: my-app:latest
+  producer:
+    image: producer:latest
     build: .
-    command: python main.py --debug
+    command: python producer.py --debug
     depends_on:
       - redis
     environment:
@@ -26,3 +26,20 @@ services:
       - REDIS_PORT=6379
     volumes:
       - ./:/app
+    deploy:
+      replicas: 3
+
+
+  consumer:
+    image: consumer:latest
+    build: .
+    command: python consumer.py --debug
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./:/app
+    deploy:
+      replicas: 6
